@@ -5,7 +5,7 @@
  *	background and wallpaper manipulation through Xlib
  */
 
-#ifndef _TOBLERONE_H_ 
+#ifndef _TOBLERONE_H_
 #define _TOBLERONE_H_
 
 #include <stdio.h>

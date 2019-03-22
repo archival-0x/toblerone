@@ -1,11 +1,6 @@
-=========
-toblerone
-=========
+# toblerone
 
 a wallpaper management tool for X11-powered systems
-
-(ASCII image of giant toblerone bar from that Jaden Smith anime)
-
 
 intro
 =====
@@ -27,9 +22,10 @@ You shall need the following from your favorite distribution:
 
 Build and install with make:
 
-	make
-	sudo make install
-
+```
+$ make
+$ sudo make install
+```
 
 manual
 ======
