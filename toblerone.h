@@ -20,11 +20,6 @@
 #define BUFFER_SIZE 4068
 #define LOCAL_IMG_FILE "image.jpg"
 
-struct FileStream;
-
-int
-get_screen_size(unsigned int *w, unsigned int *h);
-
 void
 set_wallpaper(Imlib_Image image, int imgHeight, int imgWidth);
 

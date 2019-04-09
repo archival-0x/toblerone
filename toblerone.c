@@ -1,15 +1,25 @@
+/*
+ * toblerone.c
+ *
+ *      main cli for toblerone application.
+ *      Contains helper functions that interface with
+ *      X11 in order to render a wallpaper background
+ */
+
+#include <X11/Xlib.h>
+#include <Imlib2.h>
+#include <curl/curl.h>
+
 #include "toblerone.h"
 
-/* fun xlib stuff for later use */
+
 Display *dpy;
 Screen *scrn;
 Window root;
 
-/* holds the program_name globally, such that fprintf() can display */
 char * program_name = NULL;
-
-/* note that screen_number differs from the scrn object */
 int screen_number;
+
 
 /* define a file wrapper type */
 typedef struct {
@@ -61,7 +71,7 @@ write_data(void *buffer, size_t size, size_t nmemb, void *userp)
 }
 
 
-int
+static int
 get_screen_size(unsigned int *w, unsigned int *h)
 {
 	/* attempt to open display, call error if unable to */
@@ -88,7 +98,7 @@ get_screen_size(unsigned int *w, unsigned int *h)
 
 
 void
-set_wallpaper(Imlib_Image image, int imgHeight, int imgWidth)
+set_wallpaper(Imlib_Image image, int img_h, int img_w)
 {
 	Pixmap pix;
 
@@ -101,7 +111,7 @@ set_wallpaper(Imlib_Image image, int imgHeight, int imgWidth)
 
 	/* create pixmap with canvas properties */
 	pix = XCreatePixmap(dpy, root,
-			            imgHeight, imgWidth,
+			            img_h, img_w,
 			            DefaultDepth(dpy, screen_number));
 
 	/* set the display, visual, colorable, and drawable */
@@ -139,7 +149,7 @@ void
 set_background(char * filename, unsigned int width, unsigned int height)
 {
 	Imlib_Image image;
-	int imgWidth, imgHeight;
+	int img_w, img_h;
 
 	/* load the actual image filepath */
 	image = imlib_load_image(filename);
@@ -150,11 +160,11 @@ set_background(char * filename, unsigned int width, unsigned int height)
 	imlib_context_set_image(image);
 
 	/* get image width and height properties */
-	imgWidth = imlib_image_get_width();
-	imgHeight = imlib_image_get_height();
+	img_w = imlib_image_get_width();
+	img_h = imlib_image_get_height();
 
     /* set the wallpaper */
-	set_wallpaper(image, imgWidth, imgHeight);
+	set_wallpaper(image, img_w, img_h);
 }
 
 
@@ -219,11 +229,11 @@ main(int argc, char * argv[])
 
 	program_name = argv[0];
 
-	unsigned int scrnWidth;
-	unsigned int scrnHeight;
+	unsigned int scrn_w;
+	unsigned int scrn_h;
 
 	/* get screen width and height */
-	get_screen_size(&scrnWidth, &scrnHeight);
+	get_screen_size(&scrn_w, &scrn_h);
 
 	/* parse through each arg iteratively */
 	for (i = 0; i < argc; i++) {
@@ -247,27 +257,27 @@ main(int argc, char * argv[])
 			pixfile = argv[i];
 
 			/* set pixfile as background and exit */
-			set_background(pixfile, scrnWidth, scrnHeight);
+			set_background(pixfile, scrn_w, scrn_h);
 			break;
 		}
 
 		/* progname -r / --random */
 		if (!strcmp("-r", argv[i]) || !strcmp("--random", argv[i])) {
 
-			int randFd;
+			int rand_fd;
 
 			/* construct a new url */
 			char buffer[BUFFER_SIZE];
-			sprintf(buffer, "%s%dx%d", RAND_IMG_URL, scrnWidth, scrnHeight);
+			sprintf(buffer, "%s%dx%d", RAND_IMG_URL, scrn_w, scrn_h);
 
-			randFd = get_random_image_url(buffer);
+			rand_fd = get_random_image_url(buffer);
 
 			/* error-handling */
-			if (randFd < 0)
+			if (rand_fd < 0)
 				die(-1, "unable to download random image");
 
 			/* set background as downloaded image with absolute path */
-			set_background(LOCAL_IMG_FILE, scrnWidth, scrnHeight);
+			set_background(LOCAL_IMG_FILE, scrn_w, scrn_h);
 			break;
 		}
 	}

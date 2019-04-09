@@ -14,7 +14,7 @@ they work, since I don't want to spend all my time ricing and setting my wallpap
 install
 =======
 
-You shall need the following from your favorite distribution:
+You need the following from your distribution:
 
 * libcurl
 * libx11 / xlib
@@ -44,4 +44,4 @@ This should be self-explanatory:
 license
 =======
 
-https://codemuch.tech/license.txt
+[mit](https://codemuch.tech/license.txt)
