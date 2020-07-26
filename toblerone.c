@@ -1,9 +1,8 @@
 /*
  * toblerone.c
  *
- *      main cli for toblerone application.
- *      Contains helper functions that interface with
- *      X11 in order to render a wallpaper background
+ *      Main command line application for background
+ *      rendering with X11
  */
 
 #include <X11/Xlib.h>
@@ -12,24 +11,23 @@
 
 #include "toblerone.h"
 
-
 Display *dpy;
 Screen *scrn;
 Window root;
 
-char * program_name = NULL;
+char *program_name = NULL;
 int screen_number;
 
 
 /* define a file wrapper type */
 typedef struct {
-	const char * filename;
+	const char *filename;
 	FILE *stream;
 } filestream_t ;
 
 
 static void
-die(int err, char * msg)
+die(int err, char *msg)
 {
     fprintf(stderr, "%s: %s\n", program_name, msg);
     exit(err);
@@ -37,7 +35,7 @@ die(int err, char * msg)
 
 
 static void
-usage(char * error)
+usage(char *error)
 {
 	/* if an error message is supplied, print it */
 	if (strcmp(error, ""))
@@ -58,7 +56,7 @@ static size_t
 write_data(void *buffer, size_t size, size_t nmemb, void *userp)
 {
 	/* create another pointer */
-	filestream_t *out = (filestream_t *) userp;
+	filestream_t *out = (filestream_t *)userp;
 
 	/* create a filestream to specified location */
 	if (out && !out->stream) {
@@ -79,17 +77,14 @@ get_screen_size(unsigned int *w, unsigned int *h)
 	if (!dpy)
 	    die(-1, "failed to open default display");
 
-
 	/* get default screen of display, if not call error */
-	scrn = DefaultScreenOfDisplay( dpy );
+	scrn = DefaultScreenOfDisplay(dpy);
 	if (!scrn)
 		die(-1, "failed to obtain the default screen of given display");
-
 
 	/* set the width and height variables as properties of result scrn struct */
 	*w = scrn->width;
 	*h = scrn->height;
-
 
 	/* clean up, close display */
 	XCloseDisplay(dpy);
@@ -170,11 +165,13 @@ set_background(char * filename, unsigned int width, unsigned int height)
 
 
 int
-get_random_image_url(char * url)
+get_random_image_url(char *url)
 {
 	CURL *curl;
 	CURLcode res;
-	char * location;
+
+    /* represents path where random image is stored */
+	char *location = NULL;
 
 	filestream_t fp = {
 		LOCAL_IMG_FILE,
@@ -214,7 +211,7 @@ get_random_image_url(char * url)
 	curl_global_cleanup();
 
 	/* return the location of the redirected url */
-	if (location)
+	if (location != NULL)
 		return 0;
 
 	return -1;
@@ -224,7 +221,11 @@ get_random_image_url(char * url)
 int
 main(int argc, char * argv[])
 {
-	char * pixfile = NULL;
+	/* progname NO_ARGS */
+	if (argc < 2)
+		usage("no arguments supplied");
+
+	char *pixfile = NULL;
 	register int i;
 
 	program_name = argv[0];
@@ -237,10 +238,6 @@ main(int argc, char * argv[])
 
 	/* parse through each arg iteratively */
 	for (i = 0; i < argc; i++) {
-
-		/* progname NO_ARGS */
-		if (argc < 2)
-			usage("no arguments supplied");
 
 		/* progname -h / --help */
 		if (!strcmp("-h", argv[i]) || !strcmp("--help", argv[i]))

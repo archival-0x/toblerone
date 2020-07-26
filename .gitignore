@@ -1,4 +1,6 @@
 *.o
 *.h.gch
 *.swp
+*.jpg
+
 toblerone
